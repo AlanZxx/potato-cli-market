@@ -45,7 +45,7 @@ class HttpRequest{
     //请求
     const instance = axios.create()
     //技巧
-    options = {...this(this.getInsideConfig),...options}
+    options = {...(this.getInsideConfig),...options}
     this.interceptors(instance)
     return instance(options)
   }
