@@ -58,8 +58,10 @@
   </div>
 </template>
 <script>
-import {getMenu} from '../../api/data'
+// import {getMenu} from '../../api/data'
+import {getData} from '../../api/data'
 export default {
+  name : 'home',
   data(){
     return {
       userImg: require('../../assets/images/user.jpg'),
@@ -142,7 +144,11 @@ export default {
     }
   },
   mounted(){
-    getMenu().then((res)=>{
+    getData().then((res)=>{
+      const {code,data} = res.data
+      if(code === 20000){
+        this.tableData = data.tableData
+      }
       console.log(res)
     })
   }

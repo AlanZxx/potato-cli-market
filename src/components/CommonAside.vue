@@ -29,7 +29,7 @@
         :index="subItem.path" 
         v-for="(subItem,subIndex) in item.children" 
         :key="subIndex"
-        @click="clickMenu(item)"
+        @click="clickMenu(subItem)"
       >
       <i :class="'el-icon-'+subItem.icon"></i>
       <span slot="title">{{subItem.label}}</span>
@@ -76,15 +76,15 @@
             icon: "location",
             children:[
               {
-                path: "/mark1",
-                name: "mark1",
-                label: "标签1",
-                icon: "user",
-                url: "UserManage/UserManage"
+                path: "/page1",
+                name: "page1",
+                label: "页面1",
+                icon: "setting",
+                url: "Other/PageOne"
               },{
                 path: "/page2",
                 name: "page2",
-                label: "标签2",
+                label: "页面2",
                 icon: "setting",
                 url: "Other/PageTwo"
               }
@@ -102,6 +102,7 @@
       },
       clickMenu(item){
         this.$router.push({name:item.name})
+        this.$store.commit('selectMenu', item)
       }
     },
     computed:{
