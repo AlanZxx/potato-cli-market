@@ -1,9 +1,9 @@
 <template>
-  <div>我是商品管理</div>
+  <div>我是详细商品管理</div>
 </template>
 <script>
 export default {
-  name : 'mall',
+  name : 'mallManage',
   data (){
     return {
       

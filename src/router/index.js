@@ -16,9 +16,14 @@ const routes = [
         component: () => import('../views/home')
       },
       {
-        path: '/mall',
-        name: 'mall',
-        component: () => import('../views/mall')
+        path: '/mallManage',
+        name: 'mallManage',
+        component: () => import('../views/mall/mallManage')
+      },
+      {
+        path: '/mallTypeManage',
+        name: 'mallTypeManage',
+        component: () => import('../views/mall/mallTypeManage')
       },
       {
         path: '/user',

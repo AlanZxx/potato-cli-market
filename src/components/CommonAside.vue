@@ -57,12 +57,32 @@
             icon: "s-home",
             url: "Home/Home"
           },
+          // {
+          //   path: "/mall",
+          //   name: "mall",
+          //   label: "商品管理",
+          //   icon: "video-play",
+          //   url: "MallManage/MallManage"
+          // },
           {
-            path: "/mall",
-            name: "mall",
             label: "商品管理",
-            icon: "video-play",
-            url: "MallManage/MallManage"
+            icon: "location",
+            children:[
+              {
+                path: "/mallTypeManage",
+                name: "mallTypeManage",
+                label: "商品类别管理",
+                icon: "video-play",
+                url: "mallTypeManage/mallTypeManage"
+              },
+              {
+                path: "/mallManage",
+                name: "mallManage",
+                label: "商品详细管理",
+                icon: "setting",
+                url: "mallManage/mallManage"
+              }
+            ]
           },
           {
             path: "/user",
