@@ -47,19 +47,32 @@
       </el-table>
     </div>
     <el-dialog
-      title="提示"
+      title="添加新类别"
       :visible.sync="dialogVisible"
       width="30%"
       :before-close="handleClose">
-      <span>这是一段信息</span>
+      <el-form ref="form" :model="form" label-width="80px">
+        <el-form-item label="类别名称">
+          <el-input
+            type="text"
+            placeholder="请输入类别名称"
+            v-model="form.name"
+            maxlength="10"
+            show-word-limit
+          >
+          </el-input>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible=false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible=false">确 定</el-button>
+        <el-button type="primary" @click="addConfirm">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
+
+import {addMallType} from '../../../api/data'
 export default {
   name : 'mallTypeManage',
   data (){
@@ -74,7 +87,10 @@ export default {
           goodsCounts:'100',
         }
       ],
-      multipleSelection: []
+      multipleSelection: [],
+      form: {
+        name: ''
+      }
     }
   },
   methods:{
@@ -93,8 +109,21 @@ export default {
       console.log('del');
     },
     add(){
+      this.form.name = '';
       console.log('add');
       this.dialogVisible = true;
+    },
+    addConfirm() {
+      console.log('addconfirm');
+      console.log(this.form.name);
+      // this.dialogVisible = true;
+      addMallType().then((res)=>{
+        const {code,data} = res.data
+        if(code === 20000){
+          this.tableData = data.tableData
+        }
+        console.log(res)
+      })
     },
     query(){
       console.log('query');

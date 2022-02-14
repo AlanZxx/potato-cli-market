@@ -12,3 +12,10 @@ export const getData = () =>{
     method :'get'
   })
 }
+
+export const addMallType = () =>{
+  return axios.request({
+    url:'/potato-web-market/getAllMallType',
+    method :'get'
+  })
+}
