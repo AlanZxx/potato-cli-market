@@ -15,7 +15,7 @@ export const getData = () =>{
 
 export const addMallType = () =>{
   return axios.request({
-    url:'/potato-web-market/getAllMallType',
-    method :'get'
+    url:'/potato-web-market/addMallType',
+    method :'post'
   })
 }
