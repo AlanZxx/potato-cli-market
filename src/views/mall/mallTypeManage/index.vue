@@ -72,7 +72,7 @@
 </template>
 <script>
 
-import {addMallType} from '../../../api/data'
+import {addMallType,getMallTypeList} from '../../../api/data'
 export default {
   name : 'mallTypeManage',
   data (){
@@ -92,6 +92,16 @@ export default {
         name: ''
       }
     }
+  },
+  mounted(){
+    console.log('@@@@@@@@@@ getMallTypeList')
+    getMallTypeList().then((res)=>{
+      const {code,data} = res.data
+      if(code === 20000){
+        this.tableData = data.tableData
+      }
+      console.log(res)
+    })
   },
   methods:{
     handleSelectionChange(val) {
