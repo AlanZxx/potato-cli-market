@@ -18,30 +18,35 @@
           width="55">
         </el-table-column>
         <el-table-column
-          prop="mallTypeId"
+          prop="typeId"
           label="种类ID"
           width="120">
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="typeName"
           label="种类名称"
           width="120">
         </el-table-column>
         <el-table-column
-          prop="addDate"
+          prop="addTime"
           label="添加日期"
           width="120">
-          <template slot-scope="scope">{{ scope.row.addDate }}</template>
+          <!-- <template slot-scope="scope">{{ scope.row.addDate }}</template> -->
         </el-table-column>
         <el-table-column
-          prop="modifyDate"
+          prop="updateTime"
           label="修改日期"
           width="120">
-          <template slot-scope="scope">{{ scope.row.modifyDate }}</template>
+          <!-- <template slot-scope="scope">{{ scope.row.modifyDate }}</template> -->
         </el-table-column>
         <el-table-column
-          prop="goodsCounts"
+          prop="mallCounts"
           label="现有商品数"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="detail"
+          label="备注"
           width="120">
         </el-table-column>
       </el-table>
@@ -58,6 +63,16 @@
             placeholder="请输入类别名称"
             v-model="form.name"
             maxlength="10"
+            show-word-limit
+          >
+          </el-input>
+        </el-form-item>
+        <el-form-item label="类别名称">
+          <el-input
+            type="text"
+            placeholder="请输入备注"
+            v-model="form.detail"
+            maxlength="255"
             show-word-limit
           >
           </el-input>
@@ -80,16 +95,17 @@ export default {
       dialogVisible: false,
       tableData:[
         { 
-          mallTypeId:'0001',
-          name:'五金',
+          typeId:'0001',
+          typeName:'五金',
           addDate:'2020-10-22',
           modifyDate:'2020-10-22',
-          goodsCounts:'100',
+          mallCounts:'100',
         }
       ],
       multipleSelection: [],
       form: {
-        name: ''
+        name: '',
+        detail:''
       }
     }
   },
@@ -97,10 +113,10 @@ export default {
     console.log('@@@@@@@@@@ getMallTypeList')
     getMallTypeList().then((res)=>{
       const {code,data} = res.data
-      if(code === 20000){
-        this.tableData = data.tableData
+      if(code === 200){
+        console.log(data)
+        this.tableData = data
       }
-      console.log(res)
     })
   },
   methods:{
@@ -125,9 +141,13 @@ export default {
     },
     addConfirm() {
       console.log('addconfirm');
-      console.log(this.form.name);
+      console.log(this.form);
+      let params = {
+        name:this.form.name,
+        detail:this.form.detail
+      }
       // this.dialogVisible = true;
-      addMallType().then((res)=>{
+      addMallType(params).then((res)=>{
         const {code,data} = res.data
         if(code === 20000){
           this.tableData = data.tableData

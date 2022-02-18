@@ -6,7 +6,6 @@ import store from './store'
 import ElementUI from 'element-ui';
 import http from 'axios'
 import 'element-ui/lib/theme-chalk/index.css';
-import './api/mock'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)

@@ -58,44 +58,43 @@
   </div>
 </template>
 <script>
-// import {getMenu} from '../../api/data'
-import {getData} from '../../api/data'
+import {getMenuDataList} from '../../api/data'
 export default {
   name : 'home',
   data(){
     return {
       userImg: require('../../assets/images/user.jpg'),
       tableData: [
-        {
-          name:"香蕉",
-          todayBuy:100,
-          monthBuy:300,
-          totalBuy:100000000000
-        },
-        {
-          name:"苹果",
-          todayBuy:50,
-          monthBuy:300,
-          totalBuy:800
-        },
-        {
-          name:"橘子",
-          todayBuy:30,
-          monthBuy:300,
-          totalBuy:800
-        },
-        {
-          name:"辣条",
-          todayBuy:10,
-          monthBuy:300,
-          totalBuy:800
-        },
-        {
-          name:"瓜子",
-          todayBuy:5,
-          monthBuy:300,
-          totalBuy:800
-        }
+        // {
+        //   name:"香蕉",
+        //   todayBuy:100,
+        //   monthBuy:300,
+        //   totalBuy:100000000000
+        // },
+        // {
+        //   name:"苹果",
+        //   todayBuy:50,
+        //   monthBuy:300,
+        //   totalBuy:800
+        // },
+        // {
+        //   name:"橘子",
+        //   todayBuy:30,
+        //   monthBuy:300,
+        //   totalBuy:800
+        // },
+        // {
+        //   name:"辣条",
+        //   todayBuy:10,
+        //   monthBuy:300,
+        //   totalBuy:800
+        // },
+        // {
+        //   name:"瓜子",
+        //   todayBuy:5,
+        //   monthBuy:300,
+        //   totalBuy:800
+        // }
       ],
       tableLabel:{
           name:'课程',
@@ -104,52 +103,53 @@ export default {
           totalBuy:'总购买'
       },
       countData:[
-        {
-          name:'今日支付订单',
-          value:1234,
-          icon:'success',
-          color:'#2ec7c9'
-        },
-        {
-          name:'今日收藏订单',
-          value:214,
-          icon:'star-on',
-          color:'#ffb980'
-        },
-        {
-          name:'今日未支付订单',
-          value:123,
-          icon:'s-goods',
-          color:'#5ab1ef'
-        },
-        {
-          name:'本月支付订单',
-          value:1234,
-          icon:'success',
-          color:'#2ec7c9'
-        },
-        {
-          name:'本月收藏订单',
-          value:210,
-          icon:'star-on',
-          color:'#ffb980'
-        },
-        {
-          name:'本月未支付订单',
-          value:1234,
-          icon:'success',
-          color:'#5ab1ef'
-        }
+        // {
+        //   name:'今日支付订单',
+        //   value:1234,
+        //   icon:'success',
+        //   color:'#2ec7c9'
+        // },
+        // {
+        //   name:'今日收藏订单',
+        //   value:214,
+        //   icon:'star-on',
+        //   color:'#ffb980'
+        // },
+        // {
+        //   name:'今日未支付订单',
+        //   value:123,
+        //   icon:'s-goods',
+        //   color:'#5ab1ef'
+        // },
+        // {
+        //   name:'本月支付订单',
+        //   value:1234,
+        //   icon:'success',
+        //   color:'#2ec7c9'
+        // },
+        // {
+        //   name:'本月收藏订单',
+        //   value:210,
+        //   icon:'star-on',
+        //   color:'#ffb980'
+        // },
+        // {
+        //   name:'本月未支付订单',
+        //   value:1234,
+        //   icon:'success',
+        //   color:'#5ab1ef'
+        // }
       ]
     }
   },
   mounted(){
-    getData().then((res)=>{
+    getMenuDataList().then((res)=>{
       const {code,data} = res.data
-      if(code === 20000){
+      if(code === 200){
         this.tableData = data.tableData
+        this.countData = data.countData
+        // this.tableLabel = data.tableLabel
       }
-      console.log(res)
     })
   }
 }

@@ -1,14 +1,9 @@
 import axios from "./axios";
-export const getMenu = () =>{
-  return axios.request({
-    url:'/potato-web-market',
-    method :'get'
-  })
-}
 
-export const getData = () =>{
+// 查询首页商品
+export const getMenuDataList = () =>{
   return axios.request({
-    url:'/home.getData',
+    url:'/getMenuDataList',
     method :'get'
   })
 }
@@ -16,15 +11,15 @@ export const getData = () =>{
 // 查询商品类别
 export const getMallTypeList = () =>{
   return axios.request({
-    url:'/potato-web-market/getMallTypeList',
+    url:'/getMallTypeList',
     method :'get'
   })
 }
 // 添加商品类别
-export const addMallType = () =>{
+export const addMallType = (paramas) =>{
   return axios.request({
-    url:'/potato-web-market/addMallType',
+    url:'/addMallType',
     method :'post',
-    data: '222'
+    data: paramas
   })
 }
