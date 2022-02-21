@@ -44,6 +44,16 @@ class HttpRequest{
   request(options){
     //请求创建实例
     const instance = axios.create()
+    // 修改请求格式
+    instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+    instance.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded';
+    instance.defaults.transformRequest =  [function (data) {
+      let ret = ''
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }]
     //技巧
     options = {...(this.getInsideConfig()),...options}
     this.interceptors(instance)

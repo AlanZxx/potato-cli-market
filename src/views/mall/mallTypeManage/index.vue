@@ -12,6 +12,7 @@
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
+        v-loading.fullscreen.lock="fullscreenLoading"
         @selection-change="handleSelectionChange">
         <el-table-column
           type="selection"
@@ -52,7 +53,7 @@
       </el-table>
     </div>
     <el-dialog
-      title="添加新类别"
+      :title="operaTypeTitle"
       :visible.sync="dialogVisible"
       width="30%"
       :before-close="handleClose">
@@ -61,7 +62,7 @@
           <el-input
             type="text"
             placeholder="请输入类别名称"
-            v-model="form.name"
+            v-model="form.typeName"
             maxlength="10"
             show-word-limit
           >
@@ -80,19 +81,22 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible=false">取 消</el-button>
-        <el-button type="primary" @click="addConfirm">确 定</el-button>
+        <el-button type="primary" @click="submit">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
 
-import {addMallType,getMallTypeList} from '../../../api/data'
+import {addMallType,getMallTypeList,delMallType,modMallType} from '../../../api/data'
 export default {
   name : 'mallTypeManage',
   data (){
     return {
       dialogVisible: false,
+      fullscreenLoading:false,
+      operaTypeId:0,
+      operaTypeTitle:'',
       tableData:[
         { 
           typeId:'0001',
@@ -104,22 +108,47 @@ export default {
       ],
       multipleSelection: [],
       form: {
-        name: '',
+        addTime:'',
+        mallCounts:'',
+        mallTypeStatus:'',
+        typeId:'',
+        updateTime:'',
+        typeName: '',
         detail:''
       }
     }
   },
-  mounted(){
-    console.log('@@@@@@@@@@ getMallTypeList')
-    getMallTypeList().then((res)=>{
-      const {code,data} = res.data
-      if(code === 200){
-        console.log(data)
-        this.tableData = data
+  watch:{
+    operaTypeId(val){
+      switch(val){
+        case 0:
+          this.operaTypeTitle='未知'
+          break;
+        case 2:
+          this.operaTypeTitle='新增商品种类'
+          break
+        case 4:
+          this.operaTypeTitle='修改商品种类'
+          break
       }
-    })
+    }
+  },
+  mounted(){
+    this.getInitData();
   },
   methods:{
+    //请求列表数据
+    getInitData(){
+      this.fullscreenLoading = true;
+      console.log('@@@@@@@@@@ getMallTypeList')
+      getMallTypeList().then((res)=>{
+        const {code,data} = res.data
+        if(code === 200){
+          this.tableData = data
+        }
+      })
+      this.fullscreenLoading=false;
+    },
     handleSelectionChange(val) {
       this.multipleSelection = val;
       console.log(val)
@@ -131,37 +160,141 @@ export default {
         })
         .catch(_ => {});
     },
-    del(){
-      console.log('del');
+    //新增、修改确定按钮
+    submit(){
+      switch(this.operaTypeId){
+        // 新增确认
+        case 2:
+          this.addConfirm();
+          break;
+        //修改确认
+        case 4:
+          this.modifyConfirm();
+          break;
+      } 
     },
+    // 删除操作1
+    del(){
+      if(this.multipleSelection.length<1){
+        this.$message.error('请选择要删除的选项');
+      }else{
+        this.$confirm('此操作将永久删除种类, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.fullscreenLoading=true;
+          let list=this.multipleSelection.map((item,index)=>{
+            return item.typeId;
+          })
+          let parama = {
+            idList: list
+          }
+          delMallType(parama).then((res)=>{
+            const {code,message,data} = res.data
+            if(code === 200){
+              // 删除成功
+              this.$message({type: 'success',message: '删除成功!'});
+              this.getInitData();
+              this.fullscreenLoading=false;
+            }
+            if(code === 500){
+              this.$message.error(message);
+            }
+          })
+          .catch(()=>{
+            this.fullscreenLoading=false;
+          })
+        }).catch(() => {
+          // 取消删除
+          this.$message({type: 'info',message: '已取消删除'});
+        });
+      }
+    },
+    // 添加操作开始
     add(){
-      this.form.name = '';
-      console.log('add');
+      this.initForm();
+      this.operaTypeId = 2;
       this.dialogVisible = true;
     },
+    // 添加操作2
     addConfirm() {
       console.log('addconfirm');
       console.log(this.form);
       let params = {
-        name:this.form.name,
+        name:this.form.typeName,
         detail:this.form.detail
       }
-      // this.dialogVisible = true;
+      this.fullscreenLoading=true;
+      //请求成功
       addMallType(params).then((res)=>{
-        const {code,data} = res.data
-        if(code === 20000){
-          this.tableData = data.tableData
+        const {code,message,data} = res.data
+        if(code === 200){
+          this.$message({
+            message: '添加成功',
+            type: 'success'
+          });
+          this.dialogVisible = false;
+          this.getInitData();
+          this.fullscreenLoading=false;
         }
-        console.log(res)
-      })
+        if(code === 500){
+          this.$message.error(message);
+        }
+      }).catch(()=>{
+            this.fullscreenLoading=false;
+          })
+      this.fullscreenLoading=false;
     },
+    // 查询操作
     query(){
       console.log('query');
+      console.log(this.multipleSelection);
     },
+    // 修改操作
     modify(){
       console.log('modify');
+      console.log(this.multipleSelection);
+      if(this.multipleSelection.length!=1){
+        this.$message({message:'只能选择一项进行修改',type:'warning'});
+        return;
+      }
+      this.form.typeName = this.multipleSelection[0].typeName;
+      this.form.detail = this.multipleSelection[0].detail;
+      this.form.typeId = this.multipleSelection[0].typeId;
+      this.operaTypeId = 4;
+      this.dialogVisible = true;
+      console.log(this.form);          
+    },
+    //修改确认
+    modifyConfirm(){
+      console.log(this.form);
+      let parama={
+        requestData:this.form
+      }
+      console.log(parama)
+      modMallType(parama)
+      .then((res)=>{
+        const {code,message,data} = res.data
+        if(code === 200){
+          // 删除成功
+          this.$message({type: 'success',message: '修改成功!'});
+          this.getInitData();
+          this.fullscreenLoading=false;
+        }
+        if(code === 500){
+          this.$message.error(message);
+        }
+      })
+      .catch(()=>{
+        this.fullscreenLoading=false;
+      })
+    },
+    //初始化form数据
+    initForm(){
+      this.form.typeName = '';
+      this.form.detail = '';
     }
   }
-  
 }
 </script>

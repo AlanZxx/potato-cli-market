@@ -11,6 +11,9 @@ Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.prototype.$http = http
 
+
+
+
 new Vue({
   router,
   store,

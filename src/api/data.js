@@ -23,3 +23,20 @@ export const addMallType = (paramas) =>{
     data: paramas
   })
 }
+// 删除商品类别
+export const delMallType = (paramas) =>{
+  return axios.request({
+    url:'/delMallType',
+    method :'post',
+    data: paramas
+  })
+}
+
+// 修改商品类别
+export const modMallType = (paramas) =>{
+  return axios.request({
+    url:'/modMallType',
+    method :'post',
+    data: paramas
+  })
+}
