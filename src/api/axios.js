@@ -40,13 +40,22 @@ class HttpRequest{
       return Promise.reject(error);
     });
   }
-
   request(options){
+    //请求创建实例
+    const instance = axios.create();
+    // const instance = axios.create();
+    // 修改请求格式
+    //技巧
+    options = {...(this.getInsideConfig()),...options}
+    this.interceptors(instance)
+    return instance(options)
+  }
+  requestFormData(options){
     //请求创建实例
     const instance = axios.create()
     // 修改请求格式
-    instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-    instance.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded';
+    instance.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    instance.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     instance.defaults.transformRequest =  [function (data) {
       let ret = ''
       for (let it in data) {
