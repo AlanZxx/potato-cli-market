@@ -6,7 +6,7 @@ import store from './store'
 import ElementUI from 'element-ui';
 import http from 'axios'
 import 'element-ui/lib/theme-chalk/index.css';
-
+import './utils/commonutils.js'
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.prototype.$http = http

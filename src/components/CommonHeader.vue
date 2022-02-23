@@ -50,6 +50,7 @@ header{
   height: 100%;
   align-items: center;
   justify-content: space-between;
+  // background-color: aquamarine;
 }
 .l-content{
   display: flex;

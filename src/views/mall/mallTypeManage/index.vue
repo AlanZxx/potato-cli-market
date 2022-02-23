@@ -29,26 +29,39 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="addTime"
           label="添加日期"
           width="120">
-          <!-- <template slot-scope="scope">{{ scope.row.addDate }}</template> -->
+          <template slot-scope="scope">{{ scope.row.addTime }}</template>
         </el-table-column>
         <el-table-column
-          prop="updateTime"
           label="修改日期"
           width="120">
-          <!-- <template slot-scope="scope">{{ scope.row.modifyDate }}</template> -->
+          <template slot-scope="scope">{{ scope.row.updateTime|formatDate }}</template>
         </el-table-column>
         <el-table-column
-          prop="mallCounts"
           label="现有商品数"
           width="120">
+          <template slot-scope="scope">
+            <span :style="{'color':scope.row.mallCounts>0?'blue':'red'}">{{ scope.row.mallCounts }}</span>
+          </template>
         </el-table-column>
         <el-table-column
-          prop="detail"
           label="备注"
           width="120">
+          <template slot-scope="scope">
+            <span style="color:gray">{{ scope.row.detail }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="详细管理"
+          width="120">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="primary"
+              @click="handleEdit(scope.$index, scope.row)">编辑
+            </el-button>
+          </template>
         </el-table-column>
       </el-table>
     </div>
@@ -268,12 +281,12 @@ export default {
     },
     //修改确认
     modifyConfirm(){
-      console.log(this.form);
-      let parama={
-        requestData:this.form
-      }
-      console.log(parama)
-      modMallType(parama)
+      // console.log();
+      // let parama={
+      //   requestData:this.form
+      // }
+      // console.log(parama)
+      modMallType(this.form)
       .then((res)=>{
         const {code,message,data} = res.data
         if(code === 200){
@@ -281,6 +294,7 @@ export default {
           this.$message({type: 'success',message: '修改成功!'});
           this.getInitData();
           this.fullscreenLoading=false;
+          this.dialogVisible = false;
         }
         if(code === 500){
           this.$message.error(message);
@@ -289,6 +303,10 @@ export default {
       .catch(()=>{
         this.fullscreenLoading=false;
       })
+    },
+    //操作编辑产品类别
+    handleEdit(index, row) {
+      console.log(index, row);
     },
     //初始化form数据
     initForm(){
