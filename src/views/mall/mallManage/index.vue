@@ -81,6 +81,12 @@
           >
           </el-input>
         </el-form-item>
+        <el-form-item label="所属种类">
+          <el-select v-model="form.typeId" placeholder="请选择所属种类" style="width:100%">
+            <el-option v-for="item in typeList" :key="item.typeId" :label="item.typeName" :value="item.typeId">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="销售方式">
           <el-input
             type="text"
@@ -122,6 +128,7 @@
 <script>
 
 import {addMallType,getMallTypeList,delMallType,modMallType} from '../../../api/data'
+import {getMallTypeIdList} from '../../../api/data'
 export default {
   name : 'mallManage',
   data (){
@@ -147,7 +154,8 @@ export default {
         sallType:'',
         counts: '',
         detail:''
-      }
+      },
+      typeList:[]
     }
   },
   watch:{
@@ -253,30 +261,30 @@ export default {
     addConfirm() {
       console.log('addconfirm');
       console.log(this.form);
-      let params = {
-        name:this.form.typeName,
-        detail:this.form.detail
-      }
-      this.fullscreenLoading=true;
-      //请求成功
-      addMallType(params).then((res)=>{
-        const {code,message,data} = res.data
-        if(code === 200){
-          this.$message({
-            message: '添加成功',
-            type: 'success'
-          });
-          this.dialogVisible = false;
-          this.getInitData();
-          this.fullscreenLoading=false;
-        }
-        if(code === 500){
-          this.$message.error(message);
-        }
-      }).catch(()=>{
-            this.fullscreenLoading=false;
-          })
-      this.fullscreenLoading=false;
+      // let params = {
+      //   name:this.form.typeName,
+      //   detail:this.form.detail
+      // }
+      // this.fullscreenLoading=true;
+      // //请求成功
+      // addMallType(params).then((res)=>{
+      //   const {code,message,data} = res.data
+      //   if(code === 200){
+      //     this.$message({
+      //       message: '添加成功',
+      //       type: 'success'
+      //     });
+      //     this.dialogVisible = false;
+      //     this.getInitData();
+      //     this.fullscreenLoading=false;
+      //   }
+      //   if(code === 500){
+      //     this.$message.error(message);
+      //   }
+      // }).catch(()=>{
+      //       this.fullscreenLoading=false;
+      //     })
+      // this.fullscreenLoading=false;
     },
     // 查询操作
     query(){
@@ -329,8 +337,26 @@ export default {
     },
     //初始化form数据
     initForm(){
+      this.getMallTypeIdList();
       this.form.typeName = '';
       this.form.detail = '';
+    },
+    // 获取商品种类list
+    getMallTypeIdList(){
+      getMallTypeIdList()
+      .then((res)=>{
+        const {code,message,data} = res.data
+        if(code === 200){
+          // 删除成功
+          this.typeList = data
+        }
+        if(code === 500){
+          this.$message.error(message);
+        }
+      })
+      .catch(()=>{
+        this.fullscreenLoading=false;
+      })
     }
   }
 }

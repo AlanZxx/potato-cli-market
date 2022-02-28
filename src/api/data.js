@@ -40,3 +40,12 @@ export const modMallType = (paramas) =>{
     data: paramas
   })
 }
+
+// 获取所有商品类别列表
+export const getMallTypeIdList = (paramas) =>{
+  return axios.request({
+    url:'/getMallTypeIdList',
+    method :'get',
+    data: paramas
+  })
+}
