@@ -49,3 +49,60 @@ export const getMallTypeIdList = (paramas) =>{
     data: paramas
   })
 }
+
+
+// 添加商品
+export const addGoods = (paramas) =>{
+  return axios.request({
+    url:'/addGoods',
+    method :'post',
+    data: paramas
+  })
+}
+
+
+// 查询商品列表
+export const getGoodList = () =>{
+  return axios.request({
+    url:'/getGoodList',
+    method :'get'
+  })
+}
+
+
+// 修改商品信息
+export const modGoods = (paramas) =>{
+  return axios.request({
+    url:'/modGoods',
+    method :'post',
+    data: paramas
+  })
+}
+
+//封装通用get请求
+export const request_get = (url,paramas)=>{
+  return axios.request(
+    {
+      url:'/'+url,
+      method :'get',
+      data: paramas
+    }
+  ).then((res)=>{
+    const {code,message,data} = res.data
+    console.log('success');
+    console.log(res)
+    if(code === 200){
+      return data;
+      // 删除成功
+      // this.$message({type: 'success',message: '修改成功!'});
+      // this.getInitData();
+      // this.dialogVisible = false;
+    }
+    if(code === 500){
+      // this.$message.error(message);
+    }
+  }).catch(()=>{
+    this.$message({message:'请求失败,请联系管理员',type:'error'});
+  }).finally(()=>{
+  })
+}

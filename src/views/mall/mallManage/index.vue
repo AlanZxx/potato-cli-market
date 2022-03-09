@@ -19,13 +19,13 @@
           width="55">
         </el-table-column>
         <el-table-column
-          prop="typeId"
-          label="种类ID"
+          prop="goodId"
+          label="商品编号"
           width="120">
         </el-table-column>
         <el-table-column
-          prop="typeName"
-          label="种类名称"
+          prop="goodName"
+          label="商品名称"
           width="120">
         </el-table-column>
         <el-table-column
@@ -39,10 +39,17 @@
           <template slot-scope="scope">{{ scope.row.updateTime|formatDate }}</template>
         </el-table-column>
         <el-table-column
-          label="现有商品数"
+          label="商品库存"
           width="120">
           <template slot-scope="scope">
-            <span :style="{'color':scope.row.mallCounts>0?'blue':'red'}">{{ scope.row.mallCounts }}</span>
+            <span :style="{'color':scope.row.counts>5?'blue':'red'}">{{ scope.row.counts }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="商品所属种类"
+          width="120">
+          <template slot-scope="scope">
+            {{ scope.row.mallType }}
           </template>
         </el-table-column>
         <el-table-column
@@ -83,29 +90,23 @@
         </el-form-item>
         <el-form-item label="所属种类">
           <el-select v-model="form.typeId" placeholder="请选择所属种类" style="width:100%">
-            <el-option v-for="item in typeList" :key="item.typeId" :label="item.typeName" :value="item.typeId">
+            <el-option v-for="item in mallTypeList" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="销售方式">
-          <el-input
-            type="text"
-            placeholder="销售方式"
-            v-model="form.sallType"
-            maxlength="255"
-            show-word-limit
-          >
-          </el-input>
+          <el-select v-model="form.sallType" placeholder="请选择销售方式" style="width:100%">
+            <el-option v-for="item in saleTypeList" :key="item.id" :label="item.name" :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="库存量">
-          <el-input
-            type="text"
-            placeholder="请输入备注"
-            v-model="form.counts"
-            maxlength="255"
-            show-word-limit
-          >
-          </el-input>
+          <el-input-number 
+            v-model="form.counts" 
+            style="width:100%"
+            :min="1"  
+            label="请输入库存量">
+          </el-input-number>
         </el-form-item>
         <el-form-item label="备注">
           <el-input
@@ -127,7 +128,7 @@
 </template>
 <script>
 
-import {addMallType,getMallTypeList,delMallType,modMallType} from '../../../api/data'
+import {addGoods,getGoodList,delMallType,modGoods} from '../../../api/data'
 import {getMallTypeIdList} from '../../../api/data'
 export default {
   name : 'mallManage',
@@ -139,13 +140,14 @@ export default {
       operaTypeTitle:'',
       tableData:[
         { 
-          typeId:'0001',
-          typeName:'五金',
+          goodId:'0001',
+          goodName:'五金',
           addDate:'2020-10-22',
           modifyDate:'2020-10-22',
           mallCounts:'100',
         }
       ],
+
       multipleSelection: [],
       form: {
         goodsId:'',
@@ -155,7 +157,20 @@ export default {
         counts: '',
         detail:''
       },
-      typeList:[]
+      mallTypeList:[],
+      saleTypeList:[],
+      saleType:[
+        {
+          saleTypeId:'01',
+          saleTypeName:'按G'
+        }
+      ],
+      salePrice:[
+        {
+          saleTypeId:'02',
+          saleTypeName:'袋重'
+        }
+      ]
     }
   },
   watch:{
@@ -180,10 +195,11 @@ export default {
     //请求列表数据
     getInitData(){
       this.fullscreenLoading = true;
-      console.log('@@@@@@@@@@ getMallTypeList')
-      getMallTypeList().then((res)=>{
+      console.log('@@@@@@@@@@ getGoodList')
+      getGoodList().then((res)=>{
         const {code,data} = res.data
         if(code === 200){
+          console.log(res);
           this.tableData = data
         }
       })
@@ -225,7 +241,7 @@ export default {
         }).then(() => {
           this.fullscreenLoading=true;
           let list=this.multipleSelection.map((item,index)=>{
-            return item.typeId;
+            return item.goodId;
           })
           let parama = {
             idList: list
@@ -254,6 +270,7 @@ export default {
     // 添加操作开始
     add(){
       this.initForm();
+      this.getMallTypeIdList();
       this.operaTypeId = 2;
       this.dialogVisible = true;
     },
@@ -261,30 +278,30 @@ export default {
     addConfirm() {
       console.log('addconfirm');
       console.log(this.form);
-      // let params = {
-      //   name:this.form.typeName,
-      //   detail:this.form.detail
-      // }
-      // this.fullscreenLoading=true;
-      // //请求成功
-      // addMallType(params).then((res)=>{
-      //   const {code,message,data} = res.data
-      //   if(code === 200){
-      //     this.$message({
-      //       message: '添加成功',
-      //       type: 'success'
-      //     });
-      //     this.dialogVisible = false;
-      //     this.getInitData();
-      //     this.fullscreenLoading=false;
-      //   }
-      //   if(code === 500){
-      //     this.$message.error(message);
-      //   }
-      // }).catch(()=>{
-      //       this.fullscreenLoading=false;
-      //     })
-      // this.fullscreenLoading=false;
+      let params = {
+        name:this.form.goodName,
+        detail:this.form.detail
+      }
+      this.fullscreenLoading=true;
+      //请求成功
+      addGoods(params).then((res)=>{
+        const {code,message,data} = res.data
+        if(code === 200){
+          this.$message({
+            message: '添加成功',
+            type: 'success'
+          });
+          this.dialogVisible = false;
+          this.getInitData();
+          this.fullscreenLoading=false;
+        }
+        if(code === 500){
+          this.$message.error(message);
+        }
+      }).catch(()=>{
+            this.fullscreenLoading=false;
+          })
+      this.fullscreenLoading=false;
     },
     // 查询操作
     query(){
@@ -299,21 +316,24 @@ export default {
         this.$message({message:'只能选择一项进行修改',type:'warning'});
         return;
       }
-      this.form.typeName = this.multipleSelection[0].typeName;
+      this.getMallTypeIdList();
+      this.form.goodsName = this.multipleSelection[0].goodName;
       this.form.detail = this.multipleSelection[0].detail;
-      this.form.typeId = this.multipleSelection[0].typeId;
+      this.form.goodsId = this.multipleSelection[0].goodId;
+      this.form.counts = this.multipleSelection[0].counts;
+      this.form.sallType = this.multipleSelection[0].saleType;
+      this.form.typeId = this.multipleSelection[0].mallType;
       this.operaTypeId = 4;
       this.dialogVisible = true;
       console.log(this.form);          
     },
     //修改确认
     modifyConfirm(){
-      // console.log();
-      // let parama={
-      //   requestData:this.form
-      // }
-      // console.log(parama)
-      modMallType(this.form)
+      let parama={
+        requestData:this.form
+      }
+      console.log(parama)
+      modGoods(this.form)
       .then((res)=>{
         const {code,message,data} = res.data
         if(code === 200){
@@ -337,9 +357,12 @@ export default {
     },
     //初始化form数据
     initForm(){
-      this.getMallTypeIdList();
-      this.form.typeName = '';
-      this.form.detail = '';
+      this.form.goodsId=''
+      this.form.goodsName=''
+      this.form.typeId=''
+      this.form.sallType=''
+      this.form.counts=''
+      this.form.detail=''
     },
     // 获取商品种类list
     getMallTypeIdList(){
@@ -347,8 +370,8 @@ export default {
       .then((res)=>{
         const {code,message,data} = res.data
         if(code === 200){
-          // 删除成功
-          this.typeList = data
+          this.mallTypeList = data.mallTypeList
+          this.saleTypeList = data.saleTypeList
         }
         if(code === 500){
           this.$message.error(message);

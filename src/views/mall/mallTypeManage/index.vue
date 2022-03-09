@@ -101,7 +101,7 @@
 </template>
 <script>
 
-import {addMallType,getMallTypeList,delMallType,modMallType} from '../../../api/data'
+import {addMallType,getMallTypeList,delMallType,modMallType,request_get} from '../../../api/data'
 export default {
   name : 'mallTypeManage',
   data (){
@@ -152,15 +152,17 @@ export default {
   methods:{
     //请求列表数据
     getInitData(){
-      this.fullscreenLoading = true;
-      console.log('@@@@@@@@@@ getMallTypeList')
-      getMallTypeList().then((res)=>{
-        const {code,data} = res.data
-        if(code === 200){
-          this.tableData = data
-        }
-      })
-      this.fullscreenLoading=false;
+      let me = request_get('getMallTypeList',)
+      console.log(me);
+      // this.fullscreenLoading = true;
+      // console.log('@@@@@@@@@@ getMallTypeList')
+      // getMallTypeList().then((res)=>{
+      //   const {code,data} = res.data
+      //   if(code === 200){
+      //     this.tableData = data
+      //   }
+      // })
+      // this.fullscreenLoading=false;
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -281,11 +283,7 @@ export default {
     },
     //修改确认
     modifyConfirm(){
-      // console.log();
-      // let parama={
-      //   requestData:this.form
-      // }
-      // console.log(parama)
+      this.fullscreenLoading = true;
       modMallType(this.form)
       .then((res)=>{
         const {code,message,data} = res.data
@@ -293,7 +291,6 @@ export default {
           // 删除成功
           this.$message({type: 'success',message: '修改成功!'});
           this.getInitData();
-          this.fullscreenLoading=false;
           this.dialogVisible = false;
         }
         if(code === 500){
@@ -301,6 +298,9 @@ export default {
         }
       })
       .catch(()=>{
+        this.$message({message:'请求失败，请联系管理员',type:'error'});
+      })
+      .finally(()=>{
         this.fullscreenLoading=false;
       })
     },
