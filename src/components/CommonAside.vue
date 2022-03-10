@@ -76,6 +76,13 @@
                 url: "mallTypeManage/mallTypeManage"
               },
               {
+                path: "/saleTypeManage",
+                name: "saleTypeManage",
+                label: "销售种类管理",
+                icon: "setting",
+                url: "saleTypeManage/saleTypeManage"
+              },
+              {
                 path: "/mallManage",
                 name: "mallManage",
                 label: "商品详细管理",

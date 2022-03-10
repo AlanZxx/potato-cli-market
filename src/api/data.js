@@ -88,6 +88,24 @@ export const delGoods = (paramas) =>{
   })
 }
 
+// 添加销售方式
+export const addSaleType = (paramas) =>{
+  return axios.request({
+    url:'/addSaleType',
+    method :'post',
+    data: paramas
+  })
+}
+
+
+
+// 查询销售方式列表
+export const getSaleTypeList = () =>{
+  return axios.request({
+    url:'/getSaleTypeList',
+    method :'get'
+  })
+}
 
 //封装通用get请求
 export const request_get = (url,paramas)=>{

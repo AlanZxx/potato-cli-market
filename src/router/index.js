@@ -26,6 +26,11 @@ const routes = [
         component: () => import('../views/mall/mallTypeManage')
       },
       {
+        path: '/saleTypeManage',
+        name: 'saleTypeManage',
+        component: () => import('../views/mall/saleTypeManage')
+      },
+      {
         path: '/user',
         name: 'user',
         component: () => import('../views/user')
