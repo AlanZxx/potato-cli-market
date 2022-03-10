@@ -79,6 +79,16 @@ export const modGoods = (paramas) =>{
   })
 }
 
+// 删除商品
+export const delGoods = (paramas) =>{
+  return axios.requestFormData({
+    url:'/delGoods',
+    method :'post',
+    data: paramas
+  })
+}
+
+
 //封装通用get请求
 export const request_get = (url,paramas)=>{
   return axios.request(

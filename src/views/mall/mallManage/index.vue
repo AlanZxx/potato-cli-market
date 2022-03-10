@@ -1,84 +1,116 @@
 <template>
-  <div>
-    <div>
-      <el-button type="danger" round icon="el-icon-close" @click="del">删除</el-button>
-      <el-button type="success" round icon="el-icon-circle-plus-outline" @click="add">添加</el-button>
-      <el-button type="primary" round icon="el-icon-search" @click="query">查询</el-button>
-      <el-button type="primary" round icon="el-icon-orange" @click="modify">修改</el-button>
+  <div class="mall">
+    <div class="search">
+      <el-input class="input" placeholder="商品名"/>
+      <el-input class="input" placeholder="价格范围(大于等于)"/>
+      <el-input class="input" placeholder="价格范围(小于等于)"/>
+      <el-select class="input" v-model="form.typeId" placeholder="请选择销售状态" style="width:100%">
+        <el-option v-for="item in mallTypeList" :key="item.id" :label="item.name" :value="item.id">
+        </el-option>
+      </el-select>
+      <el-select class="input" v-model="form.typeId" placeholder="请选择所属种类" style="width:100%">
+        <el-option v-for="item in mallTypeList" :key="item.id" :label="item.name" :value="item.id">
+        </el-option>
+      </el-select>
+      <el-button class="button" type="primary" circle icon="el-icon-search" @click="query"/>
+      <el-input class="input" placeholder="请输入商品编号精确查找"/>
+      <el-button class="button" type="primary" circle icon="el-icon-search" @click="query"/>
     </div>
-    <div>
-      <el-table
-        ref="multipleTable"
-        :data="tableData"
-        tooltip-effect="dark"
-        style="width: 100%"
-        v-loading.fullscreen.lock="fullscreenLoading"
-        @selection-change="handleSelectionChange">
-        <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
-        <el-table-column
-          prop="goodId"
-          label="商品编号"
-          width="120">
-        </el-table-column>
-        <el-table-column
-          prop="goodName"
-          label="商品名称"
-          width="120">
-        </el-table-column>
-        <el-table-column
-          label="添加日期"
-          width="120">
-          <template slot-scope="scope">{{ scope.row.addTime }}</template>
-        </el-table-column>
-        <el-table-column
-          label="修改日期"
-          width="120">
-          <template slot-scope="scope">{{ scope.row.updateTime|formatDate }}</template>
-        </el-table-column>
-        <el-table-column
-          label="商品库存"
-          width="120">
-          <template slot-scope="scope">
-            <span :style="{'color':scope.row.counts>5?'blue':'red'}">{{ scope.row.counts }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="商品所属种类"
-          width="120">
-          <template slot-scope="scope">
-            {{ scope.row.mallType }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="备注"
-          width="120">
-          <template slot-scope="scope">
-            <span style="color:gray">{{ scope.row.detail }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="详细管理"
-          width="120">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="primary"
-              @click="handleEdit(scope.$index, scope.row)">编辑
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+    <div class="other">
+        <el-button class="button" type="success" icon="el-icon-circle-plus-outline" @click="add"></el-button>
+        <el-button calss="button" type="warning"  icon="el-icon-edit" @click="modify"/>
+        <el-button class="button" type="danger"  icon="el-icon-delete" @click="del"></el-button>
     </div>
+    <el-table
+      class="table"
+      ref="multipleTable"
+      :data="tableData"
+      tooltip-effect="dark"
+      style="width: 100%"
+      v-loading.fullscreen.lock="fullscreenLoading"
+      @selection-change="handleSelectionChange">
+      <el-table-column
+        type="selection"/>
+      <el-table-column
+        prop="goodId"
+        label="商品编号"/>
+      <el-table-column
+        prop="goodName"
+        label="商品名称"/>
+      <el-table-column
+        label="添加日期">
+        <template slot-scope="scope">{{ scope.row.addTime }}</template>
+      </el-table-column>
+      <el-table-column
+        label="修改日期">
+        <template slot-scope="scope">{{ scope.row.updateTime|formatDate }}</template>
+      </el-table-column>
+      <el-table-column
+        label="商品库存">
+        <template slot-scope="scope">
+          <span :style="{'color':scope.row.counts>5?'blue':'red'}">{{ scope.row.counts }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="商品所属种类">
+        <template slot-scope="scope">
+          {{ scope.row.typeName }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="商品售卖方式">
+        <template slot-scope="scope">
+          {{ scope.row.saleTypeName }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="备注">
+        <template slot-scope="scope">
+          <span style="color:gray">{{ scope.row.detail }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="图片">
+        <template slot-scope="scope">
+          <span :style="{'color':scope.row.counts>5?'blue':'red'}">{{ scope.row.counts }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="原定价格">
+        <template slot-scope="scope">
+          {{ scope.row.price }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="折扣价格">
+        <template slot-scope="scope">
+          {{ scope.row.priceDis }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="折扣">
+        <template slot-scope="scope">
+          {{ scope.row.discount }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="详细管理">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="primary"
+            @click="handleEdit(scope.$index, scope.row)">编辑
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
     <el-dialog
       :title="operaTypeTitle"
       :visible.sync="dialogVisible"
       width="30%"
       :before-close="handleClose">
       <el-form ref="form" :model="form" label-width="80px">
-        <el-form-item label="商品名称">
+        <el-form-item label="名称">
           <el-input
             type="text"
             placeholder="请输入商品名称"
@@ -108,6 +140,29 @@
             label="请输入库存量">
           </el-input-number>
         </el-form-item>
+        <el-form-item label="价格">
+          <el-input
+            type="text"
+            placeholder="请输入价格"
+            v-model="form.price"
+          />
+        </el-form-item>
+        <el-form-item label="折扣价格">
+          <el-input
+            type="text"
+            placeholder="请输入商品折扣价"
+            v-model="form.priceDis"
+          >
+          </el-input>
+        </el-form-item>
+        <el-form-item label="折扣">
+          <el-input
+            type="text"
+            placeholder="请输入商品折扣"
+            v-model="form.discount"
+          >
+          </el-input>
+        </el-form-item>
         <el-form-item label="备注">
           <el-input
             type="text"
@@ -128,7 +183,7 @@
 </template>
 <script>
 
-import {addGoods,getGoodList,delMallType,modGoods} from '../../../api/data'
+import {addGoods,getGoodList,delGoods,modGoods} from '../../../api/data'
 import {getMallTypeIdList} from '../../../api/data'
 export default {
   name : 'mallManage',
@@ -155,7 +210,9 @@ export default {
         typeId:'',
         sallType:'',
         counts: '',
-        detail:''
+        detail:'',
+        price:'',
+        priceDis:''
       },
       mallTypeList:[],
       saleTypeList:[],
@@ -246,7 +303,7 @@ export default {
           let parama = {
             idList: list
           }
-          delMallType(parama).then((res)=>{
+          delGoods(parama).then((res)=>{
             const {code,message,data} = res.data
             if(code === 200){
               // 删除成功
@@ -278,13 +335,8 @@ export default {
     addConfirm() {
       console.log('addconfirm');
       console.log(this.form);
-      let params = {
-        name:this.form.goodName,
-        detail:this.form.detail
-      }
-      this.fullscreenLoading=true;
       //请求成功
-      addGoods(params).then((res)=>{
+      addGoods(this.form).then((res)=>{
         const {code,message,data} = res.data
         if(code === 200){
           this.$message({
@@ -384,3 +436,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@import "~@/assets/scss/mall"
+</style>
