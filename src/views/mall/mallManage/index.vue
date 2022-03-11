@@ -175,7 +175,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible=false">取 消</el-button>
+        <el-button @click="dialogCancel">取 消</el-button>
         <el-button type="primary" @click="submit">确 定</el-button>
       </span>
     </el-dialog>
@@ -195,11 +195,11 @@ export default {
       operaTypeTitle:'',
       tableData:[
         { 
-          goodId:'0001',
-          goodName:'五金',
-          addDate:'2020-10-22',
-          modifyDate:'2020-10-22',
-          mallCounts:'100',
+          goodId:'',
+          goodName:'',
+          addDate:'',
+          modifyDate:'',
+          mallCounts:'',
         }
       ],
 
@@ -272,6 +272,23 @@ export default {
           done();
         })
         .catch(_ => {});
+    },
+    
+    //新增、修改取消按钮
+    dialogCancel(){
+      let message = '';
+      this.$message({type: 'info',message: '已取消删除'});
+      this.dialogVisible=false
+      switch(this.operaTypeId){
+        // 新增确认
+        case 2:
+          this.addConfirm();
+          break;
+        //修改确认
+        case 4:
+          this.modifyConfirm();
+          break;
+      } 
     },
     //新增、修改确定按钮
     submit(){

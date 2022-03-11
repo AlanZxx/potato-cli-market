@@ -107,6 +107,27 @@ export const getSaleTypeList = () =>{
   })
 }
 
+
+
+// 删除销售方式
+export const delSaleType = (paramas) =>{
+  return axios.requestFormData({
+    url:'/delSaleType',
+    method :'post',
+    data: paramas
+  })
+}
+
+
+// 修改商品信息
+export const modSaleType = (paramas) =>{
+  return axios.request({
+    url:'/modSaleType',
+    method :'post',
+    data: paramas
+  })
+}
+
 //封装通用get请求
 export const request_get = (url,paramas)=>{
   return axios.request(

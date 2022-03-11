@@ -9,16 +9,13 @@ Vue.filter('formatDate',function(date, type)
             mm,
             ss,
             timeDate;
-        console.log(date)
         let time = new Date();
-        console.log(time)
         yer = time.getFullYear();
         month = time.getMonth() + 1;
         day = time.getDate();
         HH = time.getHours(); //获取系统时，
         mm = time.getMinutes(); //分
         ss = time.getSeconds(); //秒
-        console.log(yer+' '+month+' '+day+' '+HH+' '+mm+' '+' '+ss+'')
         month = (month < 10) ? ('0' + month) : month;
         day = (day < 10) ? ('0' + day) : day;
         HH = (HH < 10) ? ('0' + HH) : HH;

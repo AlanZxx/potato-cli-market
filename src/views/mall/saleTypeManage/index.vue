@@ -51,7 +51,7 @@
       </el-table-column>
       <el-table-column
         label="添加日期">
-        <template slot-scope="scope">{{ scope.row.addTime }}</template>
+        <template slot-scope="scope">{{ scope.row.addTime|formatDate }}</template>
       </el-table-column>
       <el-table-column
         label="修改日期">
@@ -86,7 +86,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible=false">取 消</el-button>
+        <el-button @click="dialogCancel">取 消</el-button>
         <el-button type="primary" @click="submit">确 定</el-button>
       </span>
     </el-dialog>
@@ -94,14 +94,14 @@
 </template>
 <script>
 
-import {addSaleType,getSaleTypeList,delGoods,modGoods} from '../../../api/data'
+import {addSaleType,getSaleTypeList,delSaleType,modSaleType} from '../../../api/data'
 export default {
   name : 'saleTypeManage',
   data (){
     return {
       dialogVisible: false,
       fullscreenLoading:false,
-      operaTypeId:0,
+      operaTypeId:-1,
       operaTypeTitle:'',
       tableData:[
         { 
@@ -140,20 +140,11 @@ export default {
   },
   watch:{
     operaTypeId(val){
-      switch(val){
-        case 0:
-          this.operaTypeTitle='未知'
-          break;
-        case 2:
-          this.operaTypeTitle='新增商品种类'
-          break
-        case 4:
-          this.operaTypeTitle='修改商品种类'
-          break
-      }
+      this.operaTypeTitle = this.$store.state.commonmessage.saleType[val].dialogtitile;
     }
   },
   mounted(){
+    this.operaTypeId=-1;
     this.getInitData();
   },
   methods:{
@@ -170,52 +161,65 @@ export default {
       })
       this.fullscreenLoading=false;
     },
+    //选择框切换事件监听
     handleSelectionChange(val) {
       this.multipleSelection = val;
       console.log(val)
     },
     handleClose(done) {
-      this.$confirm('确认关闭？')
+      this.$confirm('确认关闭?')
         .then(_ => {
+          this.dialogCancel();
           done();
         })
         .catch(_ => {});
+    },
+    copyMessage(parama){
+      return JSON.parse(JSON.stringify(parama))
+    },
+    //新增、修改取消按钮
+    dialogCancel(){
+      this.dialogVisible = false
+      let message = this.copyMessage(this.$store.state.commonmessage.saleType[this.operaTypeId].cancel);
+      this.$message(message);
     },
     //新增、修改确定按钮
     submit(){
       switch(this.operaTypeId){
         // 新增确认
-        case 2:
+        case 0:
           this.addConfirm();
           break;
         //修改确认
-        case 4:
+        case 3:
           this.modifyConfirm();
           break;
       } 
     },
     // 删除操作1
     del(){
+      this.operaTypeId = 1;
       if(this.multipleSelection.length<1){
         this.$message.error('请选择要删除的选项');
       }else{
-        this.$confirm('此操作将永久删除种类, 是否继续?', '提示', {
+        let warning = this.$store.state.commonmessage.saleType[this.operaTypeId].delete.message;
+        this.$confirm(warning, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           this.fullscreenLoading=true;
           let list=this.multipleSelection.map((item,index)=>{
-            return item.goodId;
+            return item.saleTypeId;
           })
           let parama = {
             idList: list
           }
-          delGoods(parama).then((res)=>{
+          delSaleType(parama).then((res)=>{
             const {code,message,data} = res.data
             if(code === 200){
               // 删除成功
-              this.$message({type: 'success',message: '删除成功!'});
+              this.$message(this.copyMessage(this.$store.state.commonmessage.saleType[this.operaTypeId].success));
               this.getInitData();
               this.fullscreenLoading=false;
             }
@@ -228,14 +232,14 @@ export default {
           })
         }).catch(() => {
           // 取消删除
-          this.$message({type: 'info',message: '已取消删除'});
+          this.dialogCancel();
         });
       }
     },
     // 添加操作开始
     add(){
+      this.operaTypeId = 0;
       this.initForm();
-      this.operaTypeId = 2;
       this.dialogVisible = true;
     },
     // 添加操作2
@@ -246,12 +250,10 @@ export default {
       addSaleType(this.form).then((res)=>{
         const {code,message,data} = res.data
         if(code === 200){
-          this.$message({
-            message: '添加成功',
-            type: 'success'
-          });
           this.dialogVisible = false;
           this.getInitData();
+          let message = this.copyMessage(this.$store.state.commonmessage.saleType[this.operaTypeId].success);
+          this.$message(message);
           this.fullscreenLoading=false;
         }
         if(code === 500){
@@ -269,30 +271,22 @@ export default {
     },
     // 修改操作
     modify(){
+      this.operaTypeId = 3;
       console.log('modify');
-      console.log(this.multipleSelection);
       if(this.multipleSelection.length!=1){
         this.$message({message:'只能选择一项进行修改',type:'warning'});
         return;
       }
-      this.getMallTypeIdList();
-      this.form.goodsName = this.multipleSelection[0].goodName;
-      this.form.detail = this.multipleSelection[0].detail;
-      this.form.goodsId = this.multipleSelection[0].goodId;
-      this.form.counts = this.multipleSelection[0].counts;
-      this.form.sallType = this.multipleSelection[0].saleType;
-      this.form.typeId = this.multipleSelection[0].mallType;
-      this.operaTypeId = 4;
-      this.dialogVisible = true;
-      console.log(this.form);          
+      this.form = this.copyMessage(this.multipleSelection[0]);
+      this.dialogVisible = true;  
     },
     //修改确认
     modifyConfirm(){
       let parama={
         requestData:this.form
       }
-      console.log(parama)
-      modGoods(this.form)
+      console.log(this.form);
+      modSaleType(this.form)
       .then((res)=>{
         const {code,message,data} = res.data
         if(code === 200){

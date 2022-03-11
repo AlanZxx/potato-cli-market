@@ -11,6 +11,15 @@ export default{
         icon: 'home'
       }
     ],
+    dialogMessage:[
+      {
+        titleName:'种类管理',
+        addCancelMessage:'取消新增种类',
+        addSuccessMessage:'新增种类成功',
+        modCancelMessage:'取消修改种类',
+        modSuccessMessage:'修改种类成功',
+      }
+    ],
     currentMenu: null
   },
   mutations: {
