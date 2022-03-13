@@ -27,6 +27,7 @@
       :data="tableData"
       tooltip-effect="dark"
       style="width: 100%"
+      border
       v-loading.fullscreen.lock="fullscreenLoading"
       @selection-change="handleSelectionChange">
       <el-table-column
@@ -63,24 +64,31 @@
       :visible.sync="dialogVisible"
       width="30%"
       :before-close="handleClose">
-      <el-form ref="form" :model="form" label-width="80px">
-        <el-form-item label="名称">
+      <el-form ref="form" :model="form" label-width="80px" >
+        <el-form-item label="名称"
+          prop="saleTypeName"
+          :rules="[
+            { required: true, message: '销售方式名称不能为空', trigger: 'blur' }
+          ]"
+        >
           <el-input
             type="text"
             placeholder="请输入销售方式名称"
             v-model="form.saleTypeName"
             maxlength="20"
             show-word-limit
+            clearable
           >
           </el-input>
         </el-form-item>
         <el-form-item label="备注">
           <el-input
-            type="text"
+            type="textarea"
             placeholder="请输入备注"
             v-model="form.detail"
             maxlength="255"
             show-word-limit
+            clearable
           >
           </el-input>
         </el-form-item>
@@ -244,8 +252,6 @@ export default {
     },
     // 添加操作2
     addConfirm() {
-      console.log('addconfirm');
-      console.log(this.form);
       //请求成功
       addSaleType(this.form).then((res)=>{
         const {code,message,data} = res.data
