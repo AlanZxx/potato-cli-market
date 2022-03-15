@@ -1,92 +1,100 @@
 <template>
-  <div>
-    <div>
-      <el-button type="danger" round icon="el-icon-close" @click="del">删除</el-button>
-      <el-button type="success" round icon="el-icon-circle-plus-outline" @click="add">添加</el-button>
-      <el-button type="primary" round icon="el-icon-search" @click="query">查询</el-button>
-      <el-button type="primary" round icon="el-icon-orange" @click="modify">修改</el-button>
+  <div class="mall">
+    <!-- <div class="search">
+      <el-input class="input" placeholder="商品名"/>
+      <el-input class="input" placeholder="价格范围(大于等于)"/>
+      <el-input class="input" placeholder="价格范围(小于等于)"/>
+      <el-select class="input" v-model="form.typeId" placeholder="请选择销售状态" style="width:100%">
+        <el-option v-for="item in mallTypeList" :key="item.id" :label="item.name" :value="item.id">
+        </el-option>
+      </el-select>
+      <el-select class="input" v-model="form.typeId" placeholder="请选择所属种类" style="width:100%">
+        <el-option v-for="item in mallTypeList" :key="item.id" :label="item.name" :value="item.id">
+        </el-option>
+      </el-select>
+      <el-button class="button" type="primary" circle icon="el-icon-search" @click="query"/>
+      <el-input class="input" placeholder="请输入商品编号精确查找"/>
+      <el-button class="button" type="primary" circle icon="el-icon-search" @click="query"/>
+    </div> -->
+    <div class="other">
+        <el-button class="button" type="success" icon="el-icon-circle-plus-outline" @click="add"></el-button>
+        <el-button calss="button" type="warning"  icon="el-icon-edit" @click="modify"/>
+        <el-button class="button" type="danger"  icon="el-icon-delete" @click="del"></el-button>
     </div>
-    <div>
-      <el-table
-        ref="multipleTable"
-        :data="tableData"
-        tooltip-effect="dark"
-        style="width: 100%"
-        v-loading.fullscreen.lock="fullscreenLoading"
-        @selection-change="handleSelectionChange">
-        <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
-        <el-table-column
-          prop="typeId"
-          label="种类ID">
-        </el-table-column>
-        <el-table-column
-          prop="typeName"
-          label="种类名称">
-        </el-table-column>
-        <el-table-column
-          label="现有商品数">
-          <template slot-scope="scope">
-            <span :style="{'color':scope.row.mallCounts>0?'blue':'red'}">{{ scope.row.mallCounts }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="备注">
-          <template slot-scope="scope">
-            <span style="color:gray">{{ scope.row.detail }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="详细管理">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="primary"
-              @click="handleEdit(scope.$index, scope.row)">编辑
-            </el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="添加日期">
-          <template slot-scope="scope">{{ scope.row.addTime }}</template>
-        </el-table-column>
-        <el-table-column
-          label="修改日期">
-          <template slot-scope="scope">{{ scope.row.updateTime|formatDate }}</template>
-        </el-table-column>
-      </el-table>
-    </div>
+    <el-table
+      class="table"
+      ref="multipleTable"
+      :data="tableData"
+      tooltip-effect="dark"
+      style="width: 100%"
+      border
+      v-loading.fullscreen.lock="fullscreenLoading"
+      @selection-change="handleSelectionChange">
+      <el-table-column
+        type="selection"/>
+      <el-table-column
+        prop="typeId"
+        label="种类id"/>
+      <el-table-column
+        prop="typeName"
+        label="种类名称"/>
+      <el-table-column
+        label="种类下属商品数">
+        <template slot-scope="scope">
+          <span :style="{'color':scope.row.mallTypeStatus>5?'blue':'red'}">{{ scope.row.mallTypeStatus }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="备注">
+        <template slot-scope="scope">
+          <span style="color:gray">{{ scope.row.detail }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="添加日期">
+        <template slot-scope="scope">{{ scope.row.addTime|formatDate }}</template>
+      </el-table-column>
+      <el-table-column
+        label="更新日期">
+        <template slot-scope="scope">{{ scope.row.updateTime|formatDate }}</template>
+      </el-table-column>
+    </el-table>
     <el-dialog
       :title="operaTypeTitle"
       :visible.sync="dialogVisible"
       width="30%"
       :before-close="handleClose">
-      <el-form ref="form" :model="form" label-width="80px">
-        <el-form-item label="类别名称">
+      <el-form ref="form" :model="form" label-width="80px" >
+        <el-form-item label="名称"
+          prop="typeName"
+          :rules="[
+            { required: true, message: '种类名称不能为空', trigger: 'blur' }
+          ]"
+        >
           <el-input
             type="text"
-            placeholder="请输入类别名称"
+            placeholder="请输入种类名称"
             v-model="form.typeName"
-            maxlength="10"
+            maxlength="20"
             show-word-limit
+            clearable
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="类别名称">
+        <el-form-item label="备注">
           <el-input
-            type="text"
+            type="textarea"
             placeholder="请输入备注"
             v-model="form.detail"
             maxlength="255"
             show-word-limit
+            clearable
           >
           </el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible=false">取 消</el-button>
+        <el-button @click="dialogCancel">取 消</el-button>
         <el-button type="primary" @click="submit">确 定</el-button>
       </span>
     </el-dialog>
@@ -94,103 +102,118 @@
 </template>
 <script>
 
-import {addMallType,getMallTypeList,delMallType,modMallType,request_get} from '../../../api/data'
+import {addMallType,delMallType, getMallTypeList, modMallType} from '../../../api/data'
 export default {
-  name : 'mallTypeManage',
+  name : 'saleTypeManage',
   data (){
     return {
       dialogVisible: false,
       fullscreenLoading:false,
-      operaTypeId:0,
+      operaTypeId:-1,
       operaTypeTitle:'',
       tableData:[
         { 
-          typeId:'0001',
-          typeName:'五金',
-          addDate:'2020-10-22',
-          modifyDate:'2020-10-22',
-          mallCounts:'100',
+          updateTime:'',
+          typeName:'',
+          typeId:'',
+          mallTypeStatus:'',
+          mallCounts:'',
+          detail:'',
+          addTime:''
         }
       ],
       multipleSelection: [],
       form: {
-        addTime:'',
-        mallCounts:'',
-        mallTypeStatus:'',
-        typeId:'',
         updateTime:'',
-        typeName: '',
-        detail:''
-      }
+        typeName:'',
+        typeId:'',
+        mallTypeStatus:'',
+        mallCounts:'',
+        detail:'',
+        addTime:''
+      },
+      mallTypeList:[],
+      saleTypeList:[],
+      saleType:[
+        {
+          saleTypeId:'01',
+          saleTypeName:'按G'
+        }
+      ],
+      salePrice:[
+        {
+          saleTypeId:'02',
+          saleTypeName:'袋重'
+        }
+      ]
     }
   },
   watch:{
     operaTypeId(val){
-      switch(val){
-        case 0:
-          this.operaTypeTitle='未知'
-          break;
-        case 2:
-          this.operaTypeTitle='新增商品种类'
-          break
-        case 4:
-          this.operaTypeTitle='修改商品种类'
-          break
-      }
+      this.operaTypeTitle = this.$store.state.commonmessage.mallType[val].dialogtitile;
     }
   },
   mounted(){
+    this.operaTypeId=-1;
     this.getInitData();
   },
   methods:{
     //请求列表数据
     getInitData(){
-      // let me = request_get('getMallTypeList',)
-      // if(me){
-      //   this.tableData = me.data.data;
-      // }
-
-      // console.log(me.data.data);
       this.fullscreenLoading = true;
-      console.log('@@@@@@@@@@ getMallTypeList')
+      console.log('@@@@@@@@@@ getMallType')
       getMallTypeList().then((res)=>{
         const {code,data} = res.data
         if(code === 200){
+          console.log(res);
           this.tableData = data
         }
       })
       this.fullscreenLoading=false;
     },
+    //选择框切换事件监听
     handleSelectionChange(val) {
       this.multipleSelection = val;
       console.log(val)
     },
     handleClose(done) {
-      this.$confirm('确认关闭？')
+      this.$confirm('确认关闭?')
         .then(_ => {
+          this.dialogCancel();
           done();
         })
         .catch(_ => {});
+    },
+    copyMessage(parama){
+      return JSON.parse(JSON.stringify(parama))
+    },
+    //新增、修改取消按钮
+    dialogCancel(){
+      this.dialogVisible = false
+      let message = this.copyMessage(this.$store.state.commonmessage.mallType[this.operaTypeId].cancel);
+      this.$message(message);
     },
     //新增、修改确定按钮
     submit(){
       switch(this.operaTypeId){
         // 新增确认
-        case 2:
+        case 0:
           this.addConfirm();
           break;
         //修改确认
-        case 4:
+        case 3:
           this.modifyConfirm();
           break;
       } 
     },
     // 删除操作1
     del(){
+      this.operaTypeId = 1;
       if(this.multipleSelection.length<1){
         this.$message.error('请选择要删除的选项');
       }else{
-        this.$confirm('此操作将永久删除种类, 是否继续?', '提示', {
+        let warning = this.$store.state.commonmessage.mallType[this.operaTypeId].message;
+        this.$confirm(warning, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -202,11 +225,12 @@ export default {
           let parama = {
             idList: list
           }
+          console.log(parama);
           delMallType(parama).then((res)=>{
             const {code,message,data} = res.data
             if(code === 200){
               // 删除成功
-              this.$message({type: 'success',message: '删除成功!'});
+              this.$message(this.copyMessage(this.$store.state.commonmessage.mallType[this.operaTypeId].success));
               this.getInitData();
               this.fullscreenLoading=false;
             }
@@ -219,35 +243,26 @@ export default {
           })
         }).catch(() => {
           // 取消删除
-          this.$message({type: 'info',message: '已取消删除'});
+          this.dialogCancel();
         });
       }
     },
     // 添加操作开始
     add(){
+      this.operaTypeId = 0;
       this.initForm();
-      this.operaTypeId = 2;
       this.dialogVisible = true;
     },
     // 添加操作2
     addConfirm() {
-      console.log('addconfirm');
-      console.log(this.form);
-      let params = {
-        name:this.form.typeName,
-        detail:this.form.detail
-      }
-      this.fullscreenLoading=true;
       //请求成功
-      addMallType(params).then((res)=>{
+      addMallType(this.form).then((res)=>{
         const {code,message,data} = res.data
         if(code === 200){
-          this.$message({
-            message: '添加成功',
-            type: 'success'
-          });
           this.dialogVisible = false;
           this.getInitData();
+          let message = this.copyMessage(this.$store.state.commonmessage.mallType[this.operaTypeId].success);
+          this.$message(message);
           this.fullscreenLoading=false;
         }
         if(code === 500){
@@ -265,29 +280,26 @@ export default {
     },
     // 修改操作
     modify(){
+      this.operaTypeId = 3;
       console.log('modify');
-      console.log(this.multipleSelection);
       if(this.multipleSelection.length!=1){
         this.$message({message:'只能选择一项进行修改',type:'warning'});
         return;
       }
-      this.form.typeName = this.multipleSelection[0].typeName;
-      this.form.detail = this.multipleSelection[0].detail;
-      this.form.typeId = this.multipleSelection[0].typeId;
-      this.operaTypeId = 4;
-      this.dialogVisible = true;
-      console.log(this.form);          
+      this.form = this.copyMessage(this.multipleSelection[0]);
+      this.dialogVisible = true;  
     },
     //修改确认
     modifyConfirm(){
-      this.fullscreenLoading = true;
+      console.log(this.form);
       modMallType(this.form)
       .then((res)=>{
         const {code,message,data} = res.data
         if(code === 200){
           // 删除成功
-          this.$message({type: 'success',message: '修改成功!'});
+          this.$message(this.$store.state.commonmessage.mallType[this.operaTypeId].success);
           this.getInitData();
+          this.fullscreenLoading=false;
           this.dialogVisible = false;
         }
         if(code === 500){
@@ -295,9 +307,6 @@ export default {
         }
       })
       .catch(()=>{
-        this.$message({message:'请求失败，请联系管理员',type:'error'});
-      })
-      .finally(()=>{
         this.fullscreenLoading=false;
       })
     },
@@ -307,9 +316,17 @@ export default {
     },
     //初始化form数据
     initForm(){
-      this.form.typeName = '';
-      this.form.detail = '';
+      this.form.saleTypeId=''
+      this.form.saleTypeName=''
+      this.form.goodsCount=''
+      this.form.detail=''
+      this.form.addTime=''
+      this.form.updateTime=''
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@import "~@/assets/scss/mall"
+</style>

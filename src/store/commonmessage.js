@@ -25,6 +25,30 @@ export default{
                 error:{type:'error',message:'修改商品错误'},
             }
         ],
+        // 按照增删查改0,1,2,3方式进行新增，成功，失败，等语句提示
+        mallType:
+        [
+            {
+                success:{type:'success',message:'新增种类成功'},
+                cancel:{type:'info',message:'取消新增种类'},
+                error:{type:'error',message:'新增种类错误'},
+            },
+            {
+                success:{type:'success',message:'删除种类成功'},
+                cancel:{type:'info',message:'取消删除种类'},
+                error:{type:'error',message:'删除种类错误'},
+            },
+            {
+                success:{type:'success',message:'查询种类成功'},
+                cancel:{type:'info',message:'取消种类商品'},
+                error:{type:'error',message:'查询种类错误'},
+            },
+            {
+                success:{type:'success',message:'修改种类成功'},
+                cancel:{type:'info',message:'取消修改种类'},
+                error:{type:'error',message:'修改种类错误'},
+            }
+        ],
         saleType:
         [
             {

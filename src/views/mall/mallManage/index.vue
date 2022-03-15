@@ -104,35 +104,55 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog
+     <el-dialog
       :title="operaTypeTitle"
       :visible.sync="dialogVisible"
       width="30%"
       :before-close="handleClose">
       <el-form ref="form" :model="form" label-width="80px">
-        <el-form-item label="名称">
+        <el-form-item label="名称"
+          prop="goodName"
+          :rules="[
+            { required: true, message: '名称不能为空', trigger: 'blur' }
+          ]"
+        >
           <el-input
             type="text"
             placeholder="请输入商品名称"
-            v-model="form.goodsName"
+            v-model="form.goodName"
             maxlength="20"
             show-word-limit
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="所属种类">
+        <el-form-item label="所属种类"
+          prop="typeId"
+          :rules="[
+            { required: true, message: '种类不能为空', trigger: 'blur' }
+          ]"
+        >
           <el-select v-model="form.typeId" placeholder="请选择所属种类" style="width:100%">
             <el-option v-for="item in mallTypeList" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="销售方式">
+        <el-form-item label="销售方式"
+          prop="sallType"
+          :rules="[
+            { required: true, message: '销售方式不能为空', trigger: 'blur' }
+          ]"
+        >
           <el-select v-model="form.sallType" placeholder="请选择销售方式" style="width:100%">
             <el-option v-for="item in saleTypeList" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="库存量">
+        <el-form-item label="库存量"
+          prop="counts"
+          :rules="[
+            { required: true, message: '库存量不能为空', trigger: 'blur' }
+          ]"
+        >
           <el-input-number 
             v-model="form.counts" 
             style="width:100%"
@@ -140,9 +160,14 @@
             label="请输入库存量">
           </el-input-number>
         </el-form-item>
-        <el-form-item label="价格">
+        <el-form-item label="价格"
+          prop="price"
+          :rules="[
+            { required: true, message: '价格不能为空', trigger: 'blur' }
+          ]"
+        >
           <el-input
-            type="text"
+            type="number"
             placeholder="请输入价格"
             v-model="form.price"
           />
@@ -183,36 +208,39 @@
 </template>
 <script>
 
-import {addGoods,getGoodList,delGoods,modGoods} from '../../../api/data'
-import {getMallTypeIdList} from '../../../api/data'
+import {addMallType,delMallType, getGoodList, modMallType} from '../../../api/data'
 export default {
-  name : 'mallManage',
+  name : 'saleTypeManage',
   data (){
     return {
       dialogVisible: false,
       fullscreenLoading:false,
-      operaTypeId:0,
+      operaTypeId:-1,
       operaTypeTitle:'',
       tableData:[
         { 
-          goodId:'',
-          goodName:'',
-          addDate:'',
-          modifyDate:'',
-          mallCounts:'',
+          goodsId:'',
+          goodsName:'',
+          typeId:'',
+          sallType:'',
+          counts:'',
+          detail:'',
+          price:'',
+          priceDis:'',
+          discount:''
         }
       ],
-
       multipleSelection: [],
       form: {
         goodsId:'',
-        goodsName: '',
+        goodsName:'',
         typeId:'',
         sallType:'',
-        counts: '',
+        counts:'',
         detail:'',
         price:'',
-        priceDis:''
+        priceDis:'',
+        discount:''
       },
       mallTypeList:[],
       saleTypeList:[],
@@ -232,99 +260,88 @@ export default {
   },
   watch:{
     operaTypeId(val){
-      switch(val){
-        case 0:
-          this.operaTypeTitle='未知'
-          break;
-        case 2:
-          this.operaTypeTitle='新增商品种类'
-          break
-        case 4:
-          this.operaTypeTitle='修改商品种类'
-          break
-      }
+      this.operaTypeTitle = this.$store.state.commonmessage.mall[val].dialogtitile;
     }
   },
   mounted(){
+    this.operaTypeId=-1;
     this.getInitData();
   },
   methods:{
     //请求列表数据
     getInitData(){
       this.fullscreenLoading = true;
-      console.log('@@@@@@@@@@ getGoodList')
+      console.log('@@@@@@@@@@ getMallType')
       getGoodList().then((res)=>{
         const {code,data} = res.data
         if(code === 200){
           console.log(res);
           this.tableData = data
         }
+      }).catch().finally(()=>{
+        this.fullscreenLoading=false;
       })
-      this.fullscreenLoading=false;
     },
+    //选择框切换事件监听
     handleSelectionChange(val) {
       this.multipleSelection = val;
       console.log(val)
     },
     handleClose(done) {
-      this.$confirm('确认关闭？')
+      this.$confirm('确认关闭?')
         .then(_ => {
+          this.dialogCancel();
           done();
         })
         .catch(_ => {});
     },
-    
+    copyMessage(parama){
+      return JSON.parse(JSON.stringify(parama))
+    },
     //新增、修改取消按钮
     dialogCancel(){
-      let message = '';
-      this.$message({type: 'info',message: '已取消删除'});
-      this.dialogVisible=false
-      switch(this.operaTypeId){
-        // 新增确认
-        case 2:
-          this.addConfirm();
-          break;
-        //修改确认
-        case 4:
-          this.modifyConfirm();
-          break;
-      } 
+      this.dialogVisible = false
+      let message = this.copyMessage(this.$store.state.commonmessage.mall[this.operaTypeId].cancel);
+      this.$message(message);
     },
     //新增、修改确定按钮
     submit(){
       switch(this.operaTypeId){
         // 新增确认
-        case 2:
+        case 0:
           this.addConfirm();
           break;
         //修改确认
-        case 4:
+        case 3:
           this.modifyConfirm();
           break;
       } 
     },
     // 删除操作1
     del(){
+      this.operaTypeId = 1;
       if(this.multipleSelection.length<1){
         this.$message.error('请选择要删除的选项');
       }else{
-        this.$confirm('此操作将永久删除种类, 是否继续?', '提示', {
+        let warning = this.$store.state.commonmessage.mall[this.operaTypeId].message;
+        this.$confirm(warning, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           this.fullscreenLoading=true;
           let list=this.multipleSelection.map((item,index)=>{
-            return item.goodId;
+            return item.typeId;
           })
           let parama = {
             idList: list
           }
-          delGoods(parama).then((res)=>{
+          console.log(parama);
+          delMallType(parama).then((res)=>{
             const {code,message,data} = res.data
             if(code === 200){
               // 删除成功
-              this.$message({type: 'success',message: '删除成功!'});
+              this.$message(this.copyMessage(this.$store.state.commonmessage.mall[this.operaTypeId].success));
               this.getInitData();
               this.fullscreenLoading=false;
             }
@@ -337,31 +354,31 @@ export default {
           })
         }).catch(() => {
           // 取消删除
-          this.$message({type: 'info',message: '已取消删除'});
+          this.dialogCancel();
         });
       }
     },
+    //获取下拉框的列表数据
+    getSelectData(){
+
+    },
     // 添加操作开始
     add(){
+      this.operaTypeId = 0;
       this.initForm();
-      this.getMallTypeIdList();
-      this.operaTypeId = 2;
+      this.getSelectData();
       this.dialogVisible = true;
     },
     // 添加操作2
     addConfirm() {
-      console.log('addconfirm');
-      console.log(this.form);
       //请求成功
-      addGoods(this.form).then((res)=>{
+      addMallType(this.form).then((res)=>{
         const {code,message,data} = res.data
         if(code === 200){
-          this.$message({
-            message: '添加成功',
-            type: 'success'
-          });
           this.dialogVisible = false;
           this.getInitData();
+          let message = this.copyMessage(this.$store.state.commonmessage.mall[this.operaTypeId].success);
+          this.$message(message);
           this.fullscreenLoading=false;
         }
         if(code === 500){
@@ -379,35 +396,24 @@ export default {
     },
     // 修改操作
     modify(){
+      this.operaTypeId = 3;
       console.log('modify');
-      console.log(this.multipleSelection);
       if(this.multipleSelection.length!=1){
         this.$message({message:'只能选择一项进行修改',type:'warning'});
         return;
       }
-      this.getMallTypeIdList();
-      this.form.goodsName = this.multipleSelection[0].goodName;
-      this.form.detail = this.multipleSelection[0].detail;
-      this.form.goodsId = this.multipleSelection[0].goodId;
-      this.form.counts = this.multipleSelection[0].counts;
-      this.form.sallType = this.multipleSelection[0].saleType;
-      this.form.typeId = this.multipleSelection[0].mallType;
-      this.operaTypeId = 4;
-      this.dialogVisible = true;
-      console.log(this.form);          
+      this.form = this.copyMessage(this.multipleSelection[0]);
+      this.dialogVisible = true;  
     },
     //修改确认
     modifyConfirm(){
-      let parama={
-        requestData:this.form
-      }
-      console.log(parama)
-      modGoods(this.form)
+      console.log(this.form);
+      modMallType(this.form)
       .then((res)=>{
         const {code,message,data} = res.data
         if(code === 200){
           // 删除成功
-          this.$message({type: 'success',message: '修改成功!'});
+          this.$message(this.$store.state.commonmessage.mall[this.operaTypeId].success);
           this.getInitData();
           this.fullscreenLoading=false;
           this.dialogVisible = false;
@@ -426,29 +432,17 @@ export default {
     },
     //初始化form数据
     initForm(){
-      this.form.goodsId=''
-      this.form.goodsName=''
-      this.form.typeId=''
-      this.form.sallType=''
-      this.form.counts=''
-      this.form.detail=''
-    },
-    // 获取商品种类list
-    getMallTypeIdList(){
-      getMallTypeIdList()
-      .then((res)=>{
-        const {code,message,data} = res.data
-        if(code === 200){
-          this.mallTypeList = data.mallTypeList
-          this.saleTypeList = data.saleTypeList
-        }
-        if(code === 500){
-          this.$message.error(message);
-        }
-      })
-      .catch(()=>{
-        this.fullscreenLoading=false;
-      })
+      this.form = {
+        goodsId:'',
+        goodsName:'',
+        typeId:'',
+        sallType:'',
+        counts:'',
+        detail:'',
+        price:'',
+        priceDis:'',
+        discount:''
+      }
     }
   }
 }

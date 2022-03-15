@@ -1,6 +1,6 @@
 <template>
   <div class="mall">
-    <div class="search">
+    <!-- <div class="search">
       <el-input class="input" placeholder="商品名"/>
       <el-input class="input" placeholder="价格范围(大于等于)"/>
       <el-input class="input" placeholder="价格范围(小于等于)"/>
@@ -15,7 +15,7 @@
       <el-button class="button" type="primary" circle icon="el-icon-search" @click="query"/>
       <el-input class="input" placeholder="请输入商品编号精确查找"/>
       <el-button class="button" type="primary" circle icon="el-icon-search" @click="query"/>
-    </div>
+    </div> -->
     <div class="other">
         <el-button class="button" type="success" icon="el-icon-circle-plus-outline" @click="add"></el-button>
         <el-button calss="button" type="warning"  icon="el-icon-edit" @click="modify"/>
@@ -297,7 +297,7 @@ export default {
         const {code,message,data} = res.data
         if(code === 200){
           // 删除成功
-          this.$message({type: 'success',message: '修改成功!'});
+          this.$message(this.copyMessage(this.$store.state.commonmessage.saleType[this.operaTypeId].success));
           this.getInitData();
           this.fullscreenLoading=false;
           this.dialogVisible = false;

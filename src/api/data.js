@@ -17,7 +17,7 @@ export const getMallTypeList = () =>{
 }
 // 添加商品类别
 export const addMallType = (paramas) =>{
-  return axios.requestFormData({
+  return axios.request({
     url:'/addMallType',
     method :'post',
     data: paramas
