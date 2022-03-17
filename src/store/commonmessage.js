@@ -5,21 +5,25 @@ export default{
         mall:
         [
             {
+                dialogtitile:'新增商品',
                 success:{type:'success',message:'新增商品成功'},
                 cancel:{type:'info',message:'取消新增商品'},
                 error:{type:'error',message:'新增商品错误'},
             },
             {
+                dialogtitile:'删除商品',
                 success:{type:'success',message:'删除商品成功'},
                 cancel:{type:'info',message:'取消删除商品'},
                 error:{type:'error',message:'删除商品错误'},
             },
             {
+                dialogtitile:'查询商品',
                 success:{type:'success',message:'查询商品成功'},
                 cancel:{type:'info',message:'取消查询商品'},
                 error:{type:'error',message:'查询商品错误'},
             },
             {
+                dialogtitile:'修改商品',
                 success:{type:'success',message:'修改商品成功'},
                 cancel:{type:'info',message:'取消修改商品'},
                 error:{type:'error',message:'修改商品错误'},
