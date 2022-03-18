@@ -15,6 +15,7 @@ export default{
                 success:{type:'success',message:'删除商品成功'},
                 cancel:{type:'info',message:'取消删除商品'},
                 error:{type:'error',message:'删除商品错误'},
+                delete:{message:'确认删除商品吗?该操作不可撤销!'}
             },
             {
                 dialogtitile:'查询商品',
@@ -41,6 +42,7 @@ export default{
                 success:{type:'success',message:'删除种类成功'},
                 cancel:{type:'info',message:'取消删除种类'},
                 error:{type:'error',message:'删除种类错误'},
+                delete:{message:'确认删除种类吗?该操作不可撤销!'}
             },
             {
                 success:{type:'success',message:'查询种类成功'},

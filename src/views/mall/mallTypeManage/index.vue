@@ -316,12 +316,15 @@ export default {
     },
     //初始化form数据
     initForm(){
-      this.form.saleTypeId=''
-      this.form.saleTypeName=''
-      this.form.goodsCount=''
-      this.form.detail=''
-      this.form.addTime=''
-      this.form.updateTime=''
+      this.form = {
+        updateTime:'',
+        typeName:'',
+        typeId:'',
+        mallTypeStatus:'',
+        mallCounts:'',
+        detail:'',
+        addTime:''
+      }
     }
   }
 }

@@ -111,7 +111,11 @@
       width="30%"
       :before-close="handleClose">
       <el-form ref="form" :model="form" label-width="80px">
-        <el-form-item label="名称">
+        <el-form-item label="名称"
+          :rules="[
+            { required: true, message: '名称不能为空', trigger: 'blur' }
+          ]"
+        >
           <el-input
             type="text"
             placeholder="请输入商品名称"
@@ -121,19 +125,31 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="所属种类">
+        <el-form-item label="所属种类"
+          :rules="[
+              { required: true, message: '种类不能为空', trigger: 'blur' }
+          ]"
+        >
           <el-select v-model="form.typeId" placeholder="请选择所属种类" style="width:100%">
             <el-option v-for="item in mallTypeList" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="销售方式">
+        <el-form-item label="销售方式"
+          :rules="[
+              { required: true, message: '销售方式不能为空', trigger: 'blur' }
+          ]"
+        >
           <el-select v-model="form.saleTypeId" placeholder="请选择销售方式" style="width:100%">
             <el-option v-for="item in saleTypeList" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="库存量">
+        <el-form-item label="库存量"
+          :rules="[
+              { required: true, message: '库存量不能为空', trigger: 'blur' }
+          ]"
+        >
           <el-input-number 
             v-model="form.counts" 
             style="width:100%"
@@ -141,7 +157,11 @@
             label="请输入库存量">
           </el-input-number>
         </el-form-item>
-        <el-form-item label="价格">
+        <el-form-item label="价格"
+          :rules="[
+              { required: true, message: '价格不能为空', trigger: 'blur' }
+          ]"
+        >
           <el-input
             type="text"
             placeholder="请输入价格"
@@ -174,6 +194,22 @@
           >
           </el-input>
         </el-form-item>
+         <el-form-item label="照片">
+          <el-upload
+            action="https://jsonplaceholder.typicode.com/posts/"
+            list-type="picture-card"
+            :on-preview="handlePictureCardPreview"
+            :file-list="form.fileList"
+            :limit="1"
+            :on-remove="handleRemove"
+            :on-change="handleChange"  
+          >
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisibleImg">
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogCancel">取 消</el-button>
@@ -184,7 +220,7 @@
 </template>
 <script>
 
-import {addGoods,delMallType, getGoodList, modGoods,getMallTypeIdList} from '../../../api/data'
+import {addGoods,delGoods, getGoodList, modGoods,getMallTypeIdList} from '../../../api/data'
 export default {
   name : 'saleTypeManage',
   data (){
@@ -193,50 +229,49 @@ export default {
       fullscreenLoading:false,
       operaTypeId:-1,
       operaTypeTitle:'',
+      dialogImageUrl: '',
+      dialogVisibleImg: false,
       tableData:[
         { 
-          goodsId:'',
-          goodsName:'',
+          goodId:'',
+          goodName:'',
           typeId:'',
-          sallTypeId:'',
+          saleTypeId:'',
           counts:'',
           price:'',
           priceDis:'',
           discount:'',
-          detail:''
+          detail:'',
+          fileList:[]
         }
       ],
       multipleSelection: [],
       form: {
-        goodsId:'',
-        goodsName:'',
+        goodId:'',
+        goodName:'',
         typeId:'',
-        sallTypeId:'',
+        saleTypeId:'',
         counts:'',
         price:'',
         priceDis:'',
         discount:'',
-        detail:''
+        detail:'',
+        fileList:[]
       },
       mallTypeList:[],
       saleTypeList:[],
       saleType:[
-        {
-          saleTypeId:'01',
-          saleTypeName:'按G'
-        }
       ],
       salePrice:[
-        {
-          saleTypeId:'02',
-          saleTypeName:'袋重'
-        }
       ]
     }
   },
   watch:{
     operaTypeId(val){
       this.operaTypeTitle = this.$store.state.commonmessage.mall[val].dialogtitile;
+    },
+    fileList(val){
+      console.log(val)
     }
   },
   mounted(){
@@ -244,6 +279,19 @@ export default {
     this.getInitData();
   },
   methods:{
+    handleChange(file, fileList){
+      console.log(file);
+      console.log(fileList)
+      // this.form.fileList = this.form.fileList.slice(-3);
+    },
+    handleRemove(file, fileList) {
+      console.log('remove img');
+      console.log(file, fileList);
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisibleImg = true;
+    },
     //请求列表数据
     getInitData(){
       this.fullscreenLoading = true;
@@ -298,7 +346,7 @@ export default {
       if(this.multipleSelection.length<1){
         this.$message.error('请选择要删除的选项');
       }else{
-        let warning = this.$store.state.commonmessage.mall[this.operaTypeId].message;
+        let warning = this.$store.state.commonmessage.mall[this.operaTypeId].delete.message;
         this.$confirm(warning, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -306,13 +354,13 @@ export default {
         }).then(() => {
           this.fullscreenLoading=true;
           let list=this.multipleSelection.map((item,index)=>{
-            return item.typeId;
+            return item.goodId;
           })
           let parama = {
             idList: list
           }
           console.log(parama);
-          delMallType(parama).then((res)=>{
+          delGoods(parama).then((res)=>{
             const {code,message,data} = res.data
             if(code === 200){
               // 删除成功
@@ -339,6 +387,7 @@ export default {
       .then((res)=>{
         const {code,message,data} = res.data
         if(code === 200){
+          console.log(data);
           this.mallTypeList = data.mallTypeList
           this.saleTypeList = data.saleTypeList
         }
@@ -360,22 +409,23 @@ export default {
     // 添加操作2
     addConfirm() {
       //请求成功
-      addGoods(this.form).then((res)=>{
-        const {code,message,data} = res.data
-        if(code === 200){
-          this.dialogVisible = false;
-          this.getInitData();
-          let message = this.copyMessage(this.$store.state.commonmessage.mall[this.operaTypeId].success);
-          this.$message(message);
-          this.fullscreenLoading=false;
-        }
-        if(code === 500){
-          this.$message.error(message);
-        }
-      }).catch(()=>{
-            this.fullscreenLoading=false;
-          })
-      this.fullscreenLoading=false;
+      console.log(this.form);
+      // addGoods(this.form).then((res)=>{
+      //   const {code,message,data} = res.data
+      //   if(code === 200){
+      //     this.dialogVisible = false;
+      //     this.getInitData();
+      //     let message = this.copyMessage(this.$store.state.commonmessage.mall[this.operaTypeId].success);
+      //     this.$message(message);
+      //     this.fullscreenLoading=false;
+      //   }
+      //   if(code === 500){
+      //     this.$message.error(message);
+      //   }
+      // }).catch(()=>{
+      //       this.fullscreenLoading=false;
+      //     })
+      // this.fullscreenLoading=false;
     },
     // 查询操作
     query(){
@@ -384,6 +434,7 @@ export default {
     },
     // 修改操作
     modify(){
+      this.form.fileList = [{name: 'food.jpeg', url: 'blob:http://localhost:9000/fa483a04-2ab5-4a56-8cf2-15036695f5a0'}];
       this.operaTypeId = 3;
       console.log('modify');
       if(this.multipleSelection.length!=1){
@@ -423,15 +474,16 @@ export default {
     //初始化form数据
     initForm(){
       this.form = {
-        goodsId:'',
-        goodsName:'',
+        goodId:'',
+        goodName:'',
         typeId:'',
-        sallTypeId:'',
+        saleTypeId:'',
         counts:'',
         price:'',
         priceDis:'',
         discount:'',
-        detail:''
+        detail:'',
+        fileList:[]
       }
     }
   }
