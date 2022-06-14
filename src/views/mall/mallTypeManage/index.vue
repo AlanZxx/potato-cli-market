@@ -33,15 +33,15 @@
       <el-table-column
         type="selection"/>
       <el-table-column
-        prop="typeId"
+        prop="mallTypeId"
         label="种类id"/>
       <el-table-column
-        prop="typeName"
+        prop="mallTypeName"
         label="种类名称"/>
       <el-table-column
         label="种类下属商品数">
         <template slot-scope="scope">
-          <span :style="{'color':scope.row.mallTypeStatus>5?'blue':'red'}">{{ scope.row.mallTypeStatus }}</span>
+          <span :style="{'color':scope.row.mallCounts>5?'blue':'red'}">{{ scope.row.mallCounts }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -52,7 +52,7 @@
       </el-table-column>
       <el-table-column
         label="添加日期">
-        <template slot-scope="scope">{{ scope.row.addTime|formatDate }}</template>
+        <template slot-scope="scope">{{ scope.row.createTime|formatDate }}</template>
       </el-table-column>
       <el-table-column
         label="更新日期">
@@ -102,7 +102,7 @@
 </template>
 <script>
 
-import {addMallType,delMallType, getMallTypeList, modMallType} from '../../../api/data'
+import {addMallType,delMallType, getMallTypeByLevel, modMallType} from '../../../api/data'
 export default {
   name : 'saleTypeManage',
   data (){
@@ -113,13 +113,17 @@ export default {
       operaTypeTitle:'',
       tableData:[
         { 
-          updateTime:'',
-          typeName:'',
-          typeId:'',
-          mallTypeStatus:'',
+          mallTypeId:'',
+          mallTypeName:'',
           mallCounts:'',
+          mallTypeStatus:'',
+          createTime:'',
+          updateTime:'',
           detail:'',
-          addTime:''
+          createOpId:'',
+          updateOpId:'',
+          mallTypeLevel:'',
+          parentId:''
         }
       ],
       multipleSelection: [],
@@ -162,7 +166,8 @@ export default {
     getInitData(){
       this.fullscreenLoading = true;
       console.log('@@@@@@@@@@ getMallType')
-      getMallTypeList().then((res)=>{
+      let parama= 28;
+      getMallTypeByLevel(parama).then((res)=>{
         const {code,data} = res.data
         if(code === 200){
           console.log(res);
@@ -317,13 +322,17 @@ export default {
     //初始化form数据
     initForm(){
       this.form = {
-        updateTime:'',
-        typeName:'',
-        typeId:'',
-        mallTypeStatus:'',
+        mallTypeId:'',
+        mallTypeName:'',
         mallCounts:'',
+        mallTypeStatus:'',
+        createTime:'',
+        updateTime:'',
         detail:'',
-        addTime:''
+        createOpId:'',
+        updateOpId:'',
+        mallTypeLevel:'',
+        parentId:''
       }
     }
   }

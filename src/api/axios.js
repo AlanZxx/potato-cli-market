@@ -50,6 +50,16 @@ class HttpRequest{
     this.interceptors(instance)
     return instance(options)
   }
+  requestByBody(options){
+    //请求创建实例
+    const instance = axios.create();
+    // const instance = axios.create();
+    // 修改请求格式
+    instance.defaults.headers['Content-Type'] = 'application/json;charset=UTF-8';
+    options = {...(this.getInsideConfig()),...options}
+    this.interceptors(instance)
+    return instance(options)
+  }
   requestFormData(options){
     //请求创建实例
     const instance = axios.create()

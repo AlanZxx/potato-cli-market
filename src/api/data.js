@@ -9,10 +9,11 @@ export const getMenuDataList = () =>{
 }
 
 // 查询商品类别
-export const getMallTypeList = () =>{
-  return axios.request({
-    url:'/getMallTypeList',
-    method :'get'
+export const getMallTypeByLevel = (paramas) =>{
+  return axios.requestByBody({
+    url:'/getMallTypeByLevel',
+    method :'post',
+    data: paramas
   })
 }
 // 添加商品类别
