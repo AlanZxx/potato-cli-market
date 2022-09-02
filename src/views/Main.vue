@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-aside width="auto"><common-aside-vue class="aside"/></el-aside>
+    <el-aside width="auto"><common-aside-vue/></el-aside>
     <el-container>
       <el-header>
         <common-header></common-header>
@@ -27,11 +27,16 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.aside{
+  el-container{
+    height: 100%;
+    width: 100%;
+  }
+.el-aside{
   height: 100vh;
+  background: #ffffff;
 }
 .el-header{
-  background: #333333;
+  background: #ffffff;
 }
 .el.main{
   padding-top: 0;

@@ -2,7 +2,6 @@
   <el-menu 
     class="el-menu-vertical-demo" 
     :collapse="isCollapse"
-    background-color="#ffffff"
     text-color = "#000000"
     active-text-color = "#ffd04b"
     sytle="height:100vh"
